@@ -13,14 +13,6 @@ def fetch_virtual_machine_sku_prices(virtual_machine_calculator_api='https://azu
             return jsondata
         except Exception as e:
             print(f"Error occurred while fetching virtual machine prices: {e}")
-def get_vm_spec_ratio(size):
-     ratio = {
-          "f" : { 'cpu_ram_ratio': 2,'ram_disk_ratio' : 8},
-          "fs" : { 'cpu_ram_ratio': 1.0,'ram_disk_ratio' : 2},
-          "fsv2" : { 'cpu_ram_ratio': 2,'ram_disk_ratio' : 4},
-          "fx" : { 'cpu_ram_ratio': 21,'ram_disk_ratio' :2},
-     }
-     return ratio[size]
 
 def invoke_menu(menu_data, display_name_fallback,message_item,menu_type='list'):
      
