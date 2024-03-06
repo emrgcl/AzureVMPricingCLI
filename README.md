@@ -1,6 +1,6 @@
 # Azure VM Pricing CLI Tool
 
-This tool is designed to help users fetch and display virtual machine SKU prices from a specified source. It provides an interactive CLI interface to select various options like OS/software, category, VM series, VM type, and region to filter the VM pricing data.
+This tool is specifically crafted to assist users in retrieving and showcasing the prices of virtual machine SKUs across various regions. It facilitates a comparative analysis, empowering users to make informed decisions on the optimal region for deploying their virtual machines from a cost perspective.
 
 ![Example Image](./images/sreenshot.png)
 
