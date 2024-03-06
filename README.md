@@ -2,6 +2,7 @@
 
 This tool is designed to help users fetch and display virtual machine SKU prices from a specified source. It provides an interactive CLI interface to select various options like OS/software, category, VM series, VM type, and region to filter the VM pricing data.
 
+![Example Image](./images/sreenshot.png)
 
 
 ## Features

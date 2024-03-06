@@ -33,7 +33,6 @@ def invoke_menu(menu_data, display_name_fallback,message_item,menu_type='list'):
      return answers['selected_item']
 def create_sku_string(os_software_selection,instance_selection):
     sku=f"{'windows' if os_software_selection == 'windows-os' else os_software_selection}-{instance_selection}-standard"
-    print(f"Selected SKU: {sku}")
     return sku
 def create_spec_display_string(os_software_selection,instance_selection,data):
      sku=create_sku_string(os_software_selection,instance_selection)
