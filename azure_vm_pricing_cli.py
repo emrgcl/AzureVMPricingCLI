@@ -92,7 +92,7 @@ def main():
                 if 'global' not in data['offers'][offer_name]['prices'][offer_pricing_type].keys() :
                     region_price = data['offers'][offer_name]['prices'][offer_pricing_type][region].get('value')
                     #print(f" Region: {region}, Key:{key}, PricingType: {offer_pricing_type} Price: {region_price} ")
-                    region_price_list.append({"region":region,"key":key,"pricing_type":offer_pricing_type,"price":region_price})
+                    region_price_list.append({"region":region,"key":key,"pricing_type":offer_pricing_type,"hourly_price":region_price,"monthly_price":region_price*730})
         
 
         
