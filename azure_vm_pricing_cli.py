@@ -84,14 +84,18 @@ def main():
     for region in region_selection:
         for key in offer_sku_keys:
             offer=offer_skus[key]
+            region_price=0
             for offer_name_raw in offer:
                 offer_info=offer_name_raw.split('--')
                 offer_name = offer_info[0]
                 offer_pricing_type=offer_info[1]
+                
                 #print(f"Offer Name: {offer_name}")
-                if 'global' not in data['offers'][offer_name]['prices'][offer_pricing_type].keys() :
-                    region_price = data['offers'][offer_name]['prices'][offer_pricing_type][region].get('value')
-                    region_price_list.append({"region":region,"key":key,"pricing_type":offer_pricing_type,"hourly_price":region_price,"monthly_price":region_price*730})      
+                if 'global' in data['offers'][offer_name]['prices'][offer_pricing_type].keys() :
+                    region_price += data['offers'][offer_name]['prices'][offer_pricing_type]['global'].get('value')
+                else:
+                    region_price += data['offers'][offer_name]['prices'][offer_pricing_type].get(region).get('value')
+            region_price_list.append({"region":region,"key":key,"pricing_type":offer_pricing_type,"hourly_price":region_price,"monthly_price":region_price*730})      
     table_headers = region_price_list[0].keys()
     table_rows = [vs.values() for vs in region_price_list]
     print(tabulate(table_rows, headers=table_headers, tablefmt="grid"))
