@@ -3,6 +3,7 @@ import urllib.request as request
 import inquirer
 import yaspin
 from tabulate import tabulate
+from colorama import init, Fore, Style
 
 @yaspin.yaspin(text="Fetching Azure VM SKUs")
 def fetch_virtual_machine_sku_prices(virtual_machine_calculator_api='https://azure.microsoft.com/api/v3/pricing/virtual-machines/calculator/?culture=en-us&currency=$currency'):
@@ -13,7 +14,20 @@ def fetch_virtual_machine_sku_prices(virtual_machine_calculator_api='https://azu
             return jsondata
         except Exception as e:
             print(f"Error occurred while fetching virtual machine prices: {e}")
-
+def ensure_selection(func):
+    def wrapper(*args, **kwargs):
+        # Ensure the decorator only enforces selection for checkbox menus
+        if 'checkbox' in args:
+            while True:
+                answers = func(*args, **kwargs)
+                if answers:
+                    return answers
+                print(Fore.RED, "Please select at least one option.\n" + Style.RESET_ALL)
+        else:
+            # For list menus, just call the function once
+            return func(*args, **kwargs)
+    return wrapper
+@ensure_selection
 def invoke_menu(menu_data, display_name_fallback,message_item,menu_type='list'):
      
      choices = [(md.get('displayName',display_name_fallback),md['slug'])  for md in menu_data]
@@ -31,8 +45,8 @@ def create_spec_display_string(os_software_selection,instance_selection,data):
      offer=get_offer_sku(sku,data,'payg')
      size_display_items = [item for item in data['sizesPayGo'] if item['slug'] == instance_selection]
      size_display = size_display_items[0]['displayName']
-     #offer=data['offers'][offer_sku]
-     return f"Size: {size_display} Cpu: {offer['cores']} Cores, Ram: {offer['ram']} GB, Disk: {offer['diskSize']} GB"
+     disk_size = offer.get('diskSize',0)
+     return f"Size: {size_display} Cpu: {offer['cores']} Cores, Ram: {offer['ram']} GB, Disk: {disk_size} GB"
 def create_instance_data(instance_data,os_software_selection,data):
      updated_data = [{'slug': item['slug'], 'displayName': create_spec_display_string(os_software_selection,item['slug'],data)} for item in instance_data]
      return updated_data
@@ -53,6 +67,9 @@ def get_vm_offer_skus(data,sku):
     return data['skus'][sku]
 
 def main():
+    # initialize colorama
+    init()
+    # fetch data from the Azure VM pricing API
     data = fetch_virtual_machine_sku_prices()
     software_licenses = data['softwareLicenses']
 
