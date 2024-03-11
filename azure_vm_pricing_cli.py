@@ -3,6 +3,7 @@ import urllib.request as request
 import inquirer
 import yaspin
 from tabulate import tabulate
+from colorama import init, Fore, Style
 
 @yaspin.yaspin(text="Fetching Azure VM SKUs")
 def fetch_virtual_machine_sku_prices(virtual_machine_calculator_api='https://azure.microsoft.com/api/v3/pricing/virtual-machines/calculator/?culture=en-us&currency=$currency'):
@@ -13,7 +14,20 @@ def fetch_virtual_machine_sku_prices(virtual_machine_calculator_api='https://azu
             return jsondata
         except Exception as e:
             print(f"Error occurred while fetching virtual machine prices: {e}")
-
+def ensure_selection(func):
+    def wrapper(*args, **kwargs):
+        # Ensure the decorator only enforces selection for checkbox menus
+        if 'checkbox' in args:
+            while True:
+                answers = func(*args, **kwargs)
+                if answers:
+                    return answers
+                print(Fore.RED, "Please select at least one option.\n" + Style.RESET_ALL)
+        else:
+            # For list menus, just call the function once
+            return func(*args, **kwargs)
+    return wrapper
+@ensure_selection
 def invoke_menu(menu_data, display_name_fallback,message_item,menu_type='list'):
      
      choices = [(md.get('displayName',display_name_fallback),md['slug'])  for md in menu_data]
@@ -53,6 +67,9 @@ def get_vm_offer_skus(data,sku):
     return data['skus'][sku]
 
 def main():
+    # initialize colorama
+    init()
+    # fetch data from the Azure VM pricing API
     data = fetch_virtual_machine_sku_prices()
     software_licenses = data['softwareLicenses']
 
