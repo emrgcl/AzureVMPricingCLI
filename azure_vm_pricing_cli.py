@@ -31,8 +31,8 @@ def create_spec_display_string(os_software_selection,instance_selection,data):
      offer=get_offer_sku(sku,data,'payg')
      size_display_items = [item for item in data['sizesPayGo'] if item['slug'] == instance_selection]
      size_display = size_display_items[0]['displayName']
-     #offer=data['offers'][offer_sku]
-     return f"Size: {size_display} Cpu: {offer['cores']} Cores, Ram: {offer['ram']} GB, Disk: {offer['diskSize']} GB"
+     disk_size = offer.get('diskSize',0)
+     return f"Size: {size_display} Cpu: {offer['cores']} Cores, Ram: {offer['ram']} GB, Disk: {disk_size} GB"
 def create_instance_data(instance_data,os_software_selection,data):
      updated_data = [{'slug': item['slug'], 'displayName': create_spec_display_string(os_software_selection,item['slug'],data)} for item in instance_data]
      return updated_data
