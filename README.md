@@ -45,3 +45,4 @@ python azure_vm_pricing_cli.py
 - `inquirer`: For creating interactive command-line user interfaces.
 - `yaspin`: To display spinners in the CLI for loading processes.
 - `tabulate`: To format and display the data in a table.
+- `colorama`: printing colored text.
