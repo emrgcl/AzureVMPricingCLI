@@ -106,12 +106,16 @@ def main():
                 offer_info=offer_name_raw.split('--')
                 offer_name = offer_info[0]
                 offer_pricing_type=offer_info[1]
-                
+                region_exists = data['offers'][offer_name]['prices'][offer_pricing_type].get(region)
                 #print(f"Offer Name: {offer_name}")
-                if 'global' in data['offers'][offer_name]['prices'][offer_pricing_type].keys() :
+                if 'global' in data['offers'][offer_name]['prices'][offer_pricing_type].keys() and region_exists:
                     region_price += data['offers'][offer_name]['prices'][offer_pricing_type]['global'].get('value')
                 else:
-                    region_price += data['offers'][offer_name]['prices'][offer_pricing_type].get(region).get('value')
+                    try:                     
+                        region_price += data['offers'][offer_name]['prices'][offer_pricing_type].get(region).get('value')
+                    except:
+                        #region ha no price
+                        region_price += 0
             region_price_list.append({"region":region,"key":key,"pricing_type":offer_pricing_type,"hourly_price":region_price,"monthly_price":region_price*730})      
     table_headers = region_price_list[0].keys()
     table_rows = [vs.values() for vs in region_price_list]
