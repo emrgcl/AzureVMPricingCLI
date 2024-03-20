@@ -2,8 +2,7 @@
 
 This tool is specifically crafted to assist users in retrieving and showcasing the prices of virtual machine SKUs across various regions. It facilitates a comparative analysis, empowering users to make informed decisions on the optimal region for deploying their virtual machines from a cost perspective.
 
-![Example Image](./images/recording.GIF)
-
+![Example Image](./images/recording_large.gif)
 
 ## Features
 
