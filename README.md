@@ -2,7 +2,7 @@
 
 This tool is specifically crafted to assist users in retrieving and showcasing the prices of virtual machine SKUs across various regions. It facilitates a comparative analysis, empowering users to make informed decisions on the optimal region for deploying their virtual machines from a cost perspective.
 
-![Example Image](./images/sreenshot.png)
+![Example Image](./images/recording.GIF)
 
 
 ## Features
@@ -39,6 +39,9 @@ o run the VM Pricing CLI tool, execute the following command in the terminal:
 ```bash
 python azure_vm_pricing_cli.py
 ```
+
+# Notes
+The above instructions are for windows users. For linux users use `pip3` instead of `pip` and `python3` instead of `python`
 
 # Dependencies
 
