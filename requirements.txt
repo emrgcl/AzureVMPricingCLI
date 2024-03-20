@@ -2,3 +2,4 @@ inquirer
 yaspin
 tabulate
 colorama
+pandas
