@@ -4,6 +4,7 @@ import inquirer
 import yaspin
 from tabulate import tabulate
 from colorama import init, Fore, Style
+import pandas as pd
 
 @yaspin.yaspin(text="Fetching Azure VM SKUs")
 def fetch_virtual_machine_sku_prices(virtual_machine_calculator_api='https://azure.microsoft.com/api/v3/pricing/virtual-machines/calculator/?culture=en-us&currency=$currency'):
@@ -65,7 +66,24 @@ def get_offer_sku(sku,data,plan,return_string=False):
             return offer
 def get_vm_offer_skus(data,sku):
     return data['skus'][sku]
-
+def get_pricing_models():
+    return [
+        {'slug': 'payg', 'displayName': 'Pay as you go'}, 
+        {'slug': 'spot', 'displayName': 'Spot'},
+        {'slug': 'one-year', 'displayName': '1 Year Reserved'},
+        {'slug': 'three-year', 'displayName': '3 Year Reserved'},
+        {'slug': 'sv-one-year', 'displayName': '1 Year Savings Plan'},
+        {'slug': 'sv-three-year', 'displayName': '3 Year Savings Plan'},
+        {'slug': 'ahb', 'displayName': 'Pay as you go with AHB'},
+        {'slug': 'ahbspot', 'displayName': 'Spot with AHB'},
+        {'slug': 'ahb-oneyear', 'displayName': '1 Year Reserved with AHB'},
+        {'slug': 'ahb-threeyear', 'displayName': '3 Year Reserved with AHB'},
+        {'slug': 'ahbsv-one-year', 'displayName': '1 Year Savings Plan with AHB'},
+        {'slug': 'ahbsv-three-year', 'displayName': '3 Year Savings Plan with AHB'}
+    ]
+def get_pricing_model_display_name(pricing_model_slug,pricing_models):
+    pricing_model = [pm for pm in pricing_models if pm.get('slug') == pricing_model_slug][0]
+    return pricing_model['displayName']
 def main():
     # initialize colorama
     init()
@@ -96,30 +114,46 @@ def main():
     regions = data['regions']
     region_selection=invoke_menu(regions, 'all','Region','checkbox')
     print(f"Selected Regions: {region_selection}")
+
+    pricing_models = get_pricing_models()
+
+    pricing_model_selection=invoke_menu(pricing_models, 'Pay as you go','Pricing Model','checkbox')
     offer_skus = get_vm_offer_skus(data,sku)
     offer_sku_keys = offer_skus.keys()
     for region in region_selection:
-        for key in offer_sku_keys:
-            offer=offer_skus[key]
-            region_price=0
-            for offer_name_raw in offer:
-                offer_info=offer_name_raw.split('--')
-                offer_name = offer_info[0]
-                offer_pricing_type=offer_info[1]
-                region_exists = data['offers'][offer_name]['prices'][offer_pricing_type].get(region)
-                #print(f"Offer Name: {offer_name}")
-                if 'global' in data['offers'][offer_name]['prices'][offer_pricing_type].keys() and region_exists:
-                    region_price += data['offers'][offer_name]['prices'][offer_pricing_type]['global'].get('value')
-                else:
-                    try:                     
-                        region_price += data['offers'][offer_name]['prices'][offer_pricing_type].get(region).get('value')
-                    except:
-                        #region ha no price
-                        region_price += 0
-            region_price_list.append({"region":region,"key":key,"pricing_type":offer_pricing_type,"hourly_price":region_price,"monthly_price":region_price*730})      
+        for pricing_model in offer_sku_keys:
+            if pricing_model in pricing_model_selection:
+                offer=offer_skus[pricing_model]
+                region_price=0
+                for offer_name_raw in offer:
+                    offer_info=offer_name_raw.split('--')
+                    offer_name = offer_info[0]
+                    offer_pricing_type=offer_info[1]
+                    region_exists = data['offers'][offer_name]['prices'][offer_pricing_type].get(region)
+                    #print(f"Offer Name: {offer_name}")
+                    if 'global' in data['offers'][offer_name]['prices'][offer_pricing_type].keys() and region_exists:
+                        region_price += data['offers'][offer_name]['prices'][offer_pricing_type]['global'].get('value')
+                    else:
+                        try:                     
+                            region_price += data['offers'][offer_name]['prices'][offer_pricing_type].get(region).get('value')
+                        except:
+                            #region ha no price
+                            region_price += 0
+                #region_price_list.append({"region":region,"Pricing Model":get_pricing_model_display_name(pricing_model,pricing_models),"pricing_type":offer_pricing_type,"hourly_price":region_price,"monthly_price":region_price*730})
+                region_price_list.append({"region":region,"Pricing Model":get_pricing_model_display_name(pricing_model,pricing_models),"monthly_price":region_price*730})
+    """
     table_headers = region_price_list[0].keys()
     table_rows = [vs.values() for vs in region_price_list]
     print(tabulate(table_rows, headers=table_headers, tablefmt="grid"))
+    """
+    
+    df = pd.DataFrame(region_price_list)
+    pivot_table = df.pivot_table(index=['region'], columns=['Pricing Model'],values=['monthly_price'])
 
+    pivot_table_flat = pivot_table.reset_index()
+    pivot_table_flat.columns = [f'{level1}' if level1=='region' else level2 for level1,level2 in pivot_table_flat.columns.values]
+   
+    print(tabulate(pivot_table_flat, headers='keys', tablefmt='grid'))
+    
 if __name__ == "__main__":
     main()
