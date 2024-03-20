@@ -4,7 +4,6 @@ This tool is specifically crafted to assist users in retrieving and showcasing t
 
 ![Example Image](./images/recording_large.gif)
 
-
 ## Features
 
 - Fetch virtual machine SKU prices.
