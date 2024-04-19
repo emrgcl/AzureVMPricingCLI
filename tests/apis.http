@@ -1,0 +1,4 @@
+
+GET https://management.azure.com/subscriptions/{{$dotenv subscriptionid}}/providers/Microsoft.Compute/skus?api-version=2021-07-01&filter=location eq '{{$dotenv location}}'&includeExtendedLocations=true
+Authorization: Bearer {{$dotenv token}}
+Content-Type: application/json
